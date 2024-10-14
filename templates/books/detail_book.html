@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block lists %}
+  Главная страница
+{% endblock %}
+{% block content %}
+<div>
+    <h1>{{ book.name }}</h1>
+</div>
+
+<div>
+    <h3>Автор: {{ book.author }}</h3>
+    <h3>Жанр: {{ book.genre }}</h3>
+
+    <p>Описание: {{ book.description }}</p>
+    <p>Цена: {{ book.price }} руб</p>
+
+</div>
+
+{% endblock %}
