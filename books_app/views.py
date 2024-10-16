@@ -23,7 +23,7 @@ def view_detail_book(request, book_id):
     return render(request, "books/detail_book.html", context=context)
 
 
-def add_book(request):
+def add_book_view(request):
     if request.method == 'POST':
         form = BookForm(request.POST)
         if form.is_valid():
@@ -34,7 +34,7 @@ def add_book(request):
     return render(request, 'books/add_book.html', {'form': form})
 
 
-def edit_book(request, book_id):
+def edit_book_view(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
         form = BookForm(request.POST, instance=book)
@@ -46,7 +46,7 @@ def edit_book(request, book_id):
     return render(request, 'books/add_book.html', {'form': form})
 
 
-def delete_book(request, book_id):
+def delete_book_view(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     print(book)
     if request.method == 'POST':
