@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block lists %}
+  Главная страница
+{% endblock %}
+{% block content %}
+<div>
+    <h2>Добавить/Редактировать книгу</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Сохранить</button>
+    </form>
+</div>
+
+{% endblock %}
