@@ -10,7 +10,11 @@
 
 <div>
     <h3>Автор: {{ book.author }}</h3>
-    <h3>Жанр: {{ book.genre }}</h3>
+    <h3>Жанр:
+      {% for genre in genres %}
+        {{ genre }}{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </h3>
 
     <p>Описание: {{ book.description }}</p>
     <p>Цена: {{ book.price }} руб</p>
