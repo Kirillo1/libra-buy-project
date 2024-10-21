@@ -3,6 +3,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Book
 from .forms import BookForm
 
+from comments_app.forms import CommentForm
+
+
 
 def view_books(request):
     books = Book.objects.all()
@@ -16,9 +19,14 @@ def view_books(request):
 def view_detail_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     genres = book.genres.all()
+    comments = book.comments.all()
+    form = CommentForm()
+
     context = {
         "book": book,
-        "genres": genres
+        "genres": genres,
+        "comments": comments,
+        "form": form,
     }
     return render(request, "books/detail_book.html", context=context)
 

@@ -18,14 +18,41 @@
 
     <p>Описание: {{ book.description }}</p>
     <p>Цена: {{ book.price }} руб</p>
-
-</div>
-
-<div>
-  <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-    <a href="{% url 'books:delete_book' book.id %}" class="btn btn-danger">Удалить</a>
-    <a href="{% url 'books:edit_book' book.id %}" class="btn btn-warning">Изменить</a>
   </div>
-</div>
+  <div>
+    <div class="btn-group" role="group">
+      <a href="{% url 'books:delete_book' book.id %}" class="btn btn-danger">Удалить</a>
+      <a href="{% url 'books:edit_book' book.id %}" class="btn btn-warning">Изменить</a>
+    </div>
+  </div>
+
+  <div class="card mt-5 mb-5">
+    <div class="card-header">
+        Комментарии
+    </div>
+    {% for comment in comments %}
+      <div class="card-body">
+        <div class="d-flex justify-content-between border-top">
+          <div>
+            <h5 class="card-title">{{comment}}</h5>
+          </div>
+          <div class="btn-group" style="height:40px" role="group">
+            <a href="#" class="btn btn-danger">Удалить</a>
+            <a href="#" class="btn btn-warning">Изменить</a>
+          </div>
+        </div>
+        <p class="card-text">{{ comment.text }}</p>
+      </div>
+    {% endfor %}
+
+    <div class="container mt-2 mb-2" style="width: 75%">
+      <form method="POST" action="{% url 'comments:add_comment' book.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Отправить</button>
+      </form>
+    </div>
+
+  </div>
 
 {% endblock %}
