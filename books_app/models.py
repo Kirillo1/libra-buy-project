@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Genre(models.Model):
     name = models.CharField(
         max_length=100,
@@ -8,7 +9,7 @@ class Genre(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
         verbose_name = "Жанр"
         verbose_name_plural = "Жанры"
@@ -24,7 +25,7 @@ class Book(models.Model):
         verbose_name='Автор'
     )
     genres = models.ManyToManyField(
-        Genre, 
+        Genre,
         verbose_name='Жанры'
     )
     description = models.TextField(
@@ -43,6 +44,12 @@ class Book(models.Model):
         decimal_places=2,
         verbose_name='Цена'
     )
+    image = models.ImageField(
+        upload_to='books/',
+        blank=True,
+        null=True,
+        verbose_name='Изображение'
+    )
     create_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата добавления'
@@ -50,8 +57,12 @@ class Book(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+    def delete(self, *args, **kwargs):
+        if self.image:
+            self.image.delete()
+        super().delete(*args, **kwargs)
+
     class Meta:
         verbose_name = "Книга"
         verbose_name_plural = "Книги"
-
