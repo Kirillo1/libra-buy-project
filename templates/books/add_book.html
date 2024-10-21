@@ -7,7 +7,7 @@
 <div>
     <h2>Добавить/Редактировать книгу</h2>
     <div class="container">
-        <form method="post" class="mb-5">
+        <form method="post" enctype="multipart/form-data" class="mb-5">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary">Сохранить</button>

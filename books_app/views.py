@@ -25,7 +25,7 @@ def view_detail_book(request, book_id):
 
 def add_book_view(request):
     if request.method == 'POST':
-        form = BookForm(request.POST)
+        form = BookForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('books:index')
@@ -37,7 +37,7 @@ def add_book_view(request):
 def edit_book_view(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
-        form = BookForm(request.POST, instance=book)
+        form = BookForm(request.POST, request.FILES, instance=book)
         if form.is_valid():
             form.save()
             return redirect('books:index')
