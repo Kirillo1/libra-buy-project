@@ -1,0 +1,18 @@
+
+{% extends 'base.html' %}
+{% load static %}
+{% block lists %}
+  Регистрация пользователя
+{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-center align-self-center">
+    <div class="" style="width: 50%">
+        <h2>Регистрация</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+        </form>
+    </div>
+  </div>
+{% endblock %}

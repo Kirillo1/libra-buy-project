@@ -21,13 +21,24 @@
                   </li>
                 </ul>
               </div>
-              {% if user %}
+              {% if user.is_authenticated %}
                 <ul class="navbar-nav float-sm-end">
                   <li class="nav-item">
-                    <a class="nav-link" href="#">Привет {{ user }}!</a>
+                    <a class="nav-link" href="#">Привет {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}!</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'users:logout' %}">Выход</a>
                   </li>
                 </ul>
               {% else %}
+              <ul class="navbar-nav float-sm-end">
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'users:login' %}">Вход</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'users:registration' %}">Регистрация</a>
+                </li>
+              </ul>
               {% endif %}
             </div>
           </nav>
