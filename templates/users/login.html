@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block lists %}
+  Детальная страница
+{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-center align-self-center">
+    <div class="" style="width: 50%">
+        <h1 class="h3 mb-3 fw-normal">Введите данные для входа</h1>
+        <form method='POST'>
+            {% csrf_token %}            
+            <div class="form-group">
+                <label for="{{form.username.id_for_label}}">Имя пользователя</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                <div class="text-danger">
+                    {{ form.username.errors }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{form.password.id_for_label}}">Пароль</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                <div class="text-danger">
+                    {{ form.password.errors }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <button class="btn btn-primary mt-3" type="submit">Войти</button>
+
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger mt-5 2" style="width: 100%">
+                {{ form.non_field_errors }}
+              </div>
+            {% endif %}
+          </form>
+    </div>
+  </div>
+{% endblock %}
