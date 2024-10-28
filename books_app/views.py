@@ -35,8 +35,10 @@ def add_book_view(request):
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('books:index')
+            book = form.save(commit=False)  # Создаем объект книги, но не сохраняем его в базе данных
+            book.seller = request.user  # Устанавливаем текущего пользователя как продавца
+            book.save()  # Теперь сохраняем книгу в базе данных
+            return redirect('books:index')  # Перенаправляем на нужную страницу
     else:
         form = BookForm()
     return render(request, 'books/add_book.html', {'form': form})

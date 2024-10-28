@@ -1,4 +1,8 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 
 class Genre(models.Model):
@@ -49,6 +53,16 @@ class Book(models.Model):
         blank=True,
         null=True,
         verbose_name='Изображение'
+    )
+    quantity = models.PositiveIntegerField(
+        default=0,
+        verbose_name='Количество'
+    )
+    seller = models.ForeignKey(
+        User,
+        related_name="books",
+        on_delete=models.CASCADE,
+        verbose_name="Продавец"
     )
     create_at = models.DateTimeField(
         auto_now_add=True,
