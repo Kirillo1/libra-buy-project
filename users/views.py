@@ -1,8 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 
+from books_app.models import Book
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 
+
+def view_profile(request):
+    user_books = Book.objects.filter(seller=request.user)
+    return render(request, 'users/profile.html', {'user_books': user_books})
 
 def register_user_view(request):
     if request.method == 'POST':
