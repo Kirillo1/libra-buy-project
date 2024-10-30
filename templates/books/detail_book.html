@@ -37,10 +37,13 @@
           <div>
             <h5 class="card-title">{{comment}}</h5>
           </div>
+          {% if user.is_authenticated and user == comment.author %}
+
           <div class="btn-group" style="height:40px" role="group">
             <button class="btn btn-danger" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Удалить</button>
             <a href="{% url 'comments:edit_comment' comment.id book.id %}" class="btn btn-warning">Изменить</a>
           </div>
+          {% endif %}
         </div>
         <p class="card-text">{{ comment.text }}</p>
       </div>

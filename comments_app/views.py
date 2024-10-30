@@ -11,7 +11,9 @@ def add_comment_view(request, book_id):
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
-            comment.book = book
+            comment.book_id = book_id
+            if request.user.is_authenticated:
+                comment.author = request.user
             comment.save()
             return redirect('books:detail_book', book_id=book.id)
     else:
