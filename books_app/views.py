@@ -6,7 +6,6 @@ from .forms import BookForm
 from comments_app.forms import CommentForm
 
 
-
 def view_books(request):
     books = Book.objects.all()
     context = {
@@ -50,7 +49,7 @@ def edit_book_view(request, book_id):
         form = BookForm(request.POST, request.FILES, instance=book)
         if form.is_valid():
             form.save()
-            return redirect('books:index')
+            return redirect('books:detail_book', book_id=book.id)
     else:
         form = BookForm(instance=book)
     return render(request, 'books/add_book.html', {'form': form})
