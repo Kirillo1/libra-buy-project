@@ -11,7 +11,7 @@
       {% for book in books %}
         <div class="col-12 col-md-6 col-lg-3 mb-4 d-flex">
           <div class="card" style="width: 100%;">
-            <img src="{% if book.image %} {{ book.image.url }} {% else %} {% static 'img/default_img.jpg'%} {% endif %}">
+            <img src="{% if book.image %} {{ book.image.url }} {% else %} {% static 'img/default_img.jpg' %} {% endif %}">
             <div class="card-body">
               <div class="d-flex justify-content-between">
                 <h5 class="card-title">{{ book.name }}</h5>
@@ -29,6 +29,46 @@
         </div>
       {% endfor %}
     </div>
+
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        {% if books.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ books.previous_page_number }}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">&laquo;</span>
+          </li>
+        {% endif %}
+
+        {% for page_num in books.paginator.page_range %}
+          {% if books.number == page_num %}
+            <li class="page-item active">
+              <span class="page-link">{{ page_num }}</span>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+        {% if books.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ books.next_page_number }}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">&raquo;</span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
   </div>
 {% else %}
   <h1>Товара нет</h1>
