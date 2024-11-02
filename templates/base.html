@@ -21,6 +21,11 @@
                       <a class="nav-link" href="{% url 'books:add_book' %}">Добавить книгу</a>
                     </li>
                   {% endif %}
+                  {% if user.is_staff %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'users:admin_dashboard' %}">Админ панель</a>
+                  </li>
+                  {% endif %}
                 </ul>
               </div>
               <ul class="navbar-nav float-sm-end">
