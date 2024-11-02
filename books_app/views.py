@@ -1,6 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_POST
+from django.core.paginator import Paginator
+from django.http import JsonResponse
 
 from .models import Book
 from .forms import BookForm
@@ -9,11 +12,15 @@ from comments_app.forms import CommentForm
 
 
 def view_books(request):
-    books = Book.objects.all()
+    books_list = Book.objects.all()
+    paginator = Paginator(books_list, 12)  # Показывает 8 книг на странице
+
+    page_number = request.GET.get('page')
+    books = paginator.get_page(page_number)
+
     context = {
         "books": books
     }
-
     return render(request, "books/index.html", context=context)
 
 
@@ -78,3 +85,16 @@ def delete_book_view(request, book_id):
         book.delete()
         return redirect('books:index')
     return render(request, 'books/delete_book.html', {'book': book})
+
+
+@require_POST
+@user_passes_test(lambda u: u.is_superuser)  # Проверка: только для суперпользователей
+def change_book_status(request, book_id):
+    try:
+        book = Book.objects.get(id=book_id)
+        # Меняем статус на противоположный
+        book.is_verified = not book.is_verified
+        book.save()
+        return JsonResponse({"status": "success", "is_verified": book.is_verified})
+    except Book.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "Книга не найдена"})
