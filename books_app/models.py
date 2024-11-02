@@ -68,6 +68,10 @@ class Book(models.Model):
         auto_now_add=True,
         verbose_name='Дата добавления'
     )
+    is_verified = models.BooleanField(
+        default=False,
+        verbose_name='Проверена администратором?'
+    )
 
     def __str__(self):
         return self.name
