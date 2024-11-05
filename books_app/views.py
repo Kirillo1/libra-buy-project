@@ -5,7 +5,7 @@ from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 
-from .models import Book
+from .models import Book, Rating
 from .forms import BookForm
 
 from comments_app.forms import CommentForm
@@ -98,3 +98,27 @@ def change_book_status(request, book_id):
         return JsonResponse({"status": "success", "is_verified": book.is_verified})
     except Book.DoesNotExist:
         return JsonResponse({"status": "error", "message": "Книга не найдена"})
+
+
+@login_required(login_url='users:login')
+def rate_book(request, book_id):
+    if request.method == "POST":
+        book = get_object_or_404(Book, id=book_id)
+        score = int(request.POST.get("score"))
+
+        # Убедимся, что оценка в пределах 1-5
+        if score < 1 or score > 5:
+            return JsonResponse({"status": "error", "message": "Что то пошло не так"})
+
+        # Обновляем или создаем оценку
+        rating, created = Rating.objects.update_or_create(
+            user=request.user,
+            book=book,
+            defaults={"score": score}
+        )
+
+        # Пересчитываем средний рейтинг
+        average_rating = book.average_rating
+
+        return JsonResponse({"status": "success", "average_rating": average_rating})
+    return JsonResponse({"status": "error", "message": "Только POST запросы разрешены."})
