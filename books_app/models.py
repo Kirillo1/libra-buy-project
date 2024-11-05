@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 User = get_user_model()
@@ -81,6 +82,26 @@ class Book(models.Model):
             self.image.delete()
         super().delete(*args, **kwargs)
 
+    @property
+    def average_rating(self):
+        ratings = self.ratings.all()
+        return ratings.aggregate(models.Avg('score'))['score__avg'] or 0
+    
     class Meta:
         verbose_name = "Книга"
         verbose_name_plural = "Книги"
+
+
+class Rating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, related_name="ratings", on_delete=models.CASCADE)
+    score = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        verbose_name="Оценка"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "book")
+        verbose_name = "Рейтинг"
+        verbose_name_plural = "Рейтинги"
