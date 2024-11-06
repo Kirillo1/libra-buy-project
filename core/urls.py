@@ -25,6 +25,7 @@ urlpatterns = [
     path('', include('books_app.urls', namespace='books')),
     path('', include('comments_app.urls', namespace='comments')),
     path('', include('users.urls', namespace='users')),
+    path('', include('cart_app.urls', namespace='cart')),
 ]
 
 
