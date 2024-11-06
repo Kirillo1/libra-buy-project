@@ -16,6 +16,7 @@
           <div class="card-body">
             <p class="card-text">Название книги: {{ cart_book.book.name }}</p>
             <p class="card-text">Количество: {{ cart_book.quantity }}</p>
+            <button type="button" class="btn btn-danger btn-remove-cart" data-cart-book-id="{{ cart_book.id }}">Удалить</button>
           </div>
         </div>
       </div>

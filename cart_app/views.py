@@ -18,19 +18,36 @@ def view_cart(request):
     return render(request, 'cart/cart.html', context)
 
 
-@login_required
 @require_POST
+@login_required(login_url='users:login')
 def add_to_cart(request):
     book_id = request.POST.get("book_id")
-    if book_id:
+    try:
+        book = Book.objects.get(id=book_id)
+
+        if book.quantity == 0:
+            return JsonResponse({"status": "error", "message": "В остатке нет книг"})
+
+        cart_item, created = Cart.objects.get_or_create(
+            user=request.user, book=book)
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+        return JsonResponse({"status": "success", "message": "Книга добавлена в корзину"})
+
+    except Book.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "Книга не найдена"})
+
+
+@require_POST
+@login_required(login_url='users:login')
+def remove_from_cart(request):
+    if request.method == "POST":
+        cart_book_id = request.POST.get("cart_book_id")
         try:
-            book = Book.objects.get(id=book_id)
-            cart_item, created = Cart.objects.get_or_create(
-                user=request.user, book=book)
-            if not created:
-                cart_item.quantity += 1
-                cart_item.save()
-            return JsonResponse({"status": "success", "message": "Книга добавлена в корзину"})
-        except Book.DoesNotExist:
-            return JsonResponse({"status": "error", "message": "Книга не найдена"})
-    return JsonResponse({"status": "error", "message": "Некорректный запрос"})
+            cart_book = Cart.objects.get(id=cart_book_id)
+            cart_book.delete()
+            return JsonResponse({"status": "success", "message": "Книга удалена из корзины."})
+        except Cart.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Книга не найдена в корзине."})
+    return JsonResponse({"status": "error", "message": "Некорректный запрос."})
