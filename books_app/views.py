@@ -60,7 +60,7 @@ def edit_book_view(request, book_id):
     if book.seller != request.user:
         raise PermissionDenied(
             "У вас нет прав на редактирование этой книги."
-    )
+        )
 
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES, instance=book)
@@ -70,6 +70,33 @@ def edit_book_view(request, book_id):
     else:
         form = BookForm(instance=book)
     return render(request, 'books/add_book.html', {'form': form})
+
+
+def filtered_books_view(request):
+    books = Book.objects.all()
+
+    name = request.GET.get('name', '').strip()
+    genre = request.GET.get('genre', '').strip()
+    author = request.GET.get('author', '').strip()
+
+    print(genre)
+
+    if name:
+        books = books.filter(name__icontains=name)
+    if genre:
+        books = books.filter(genres__name__icontains=genre)
+    if author:
+        books = books.filter(author__icontains=author)
+
+    paginator = Paginator(books, 12) 
+    page_number = request.GET.get('page')
+    books_page = paginator.get_page(page_number)
+
+    context = {
+        'books': books_page
+    }
+
+    return render(request, 'books/filtered_books.html', context)
 
 
 @login_required(login_url='users:login')

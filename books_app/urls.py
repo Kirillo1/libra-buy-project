@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (view_books, view_detail_book, 
                     add_book_view, delete_book_view, edit_book_view,
-                    change_book_status, rate_book)
+                    change_book_status, rate_book, filtered_books_view)
 
 
 app_name = "books"
@@ -15,4 +15,5 @@ urlpatterns = [
     path('delete_book/<int:book_id>/', delete_book_view, name='delete_book'),
     path('change-book-status/<int:book_id>/', change_book_status, name='change_book_status'),
     path('book/<int:book_id>/rate/', rate_book, name='rate_book'),
+    path('filtered_books/', filtered_books_view, name='filtered_books'),
 ]
