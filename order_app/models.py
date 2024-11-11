@@ -7,6 +7,10 @@ User = get_user_model()
 
 
 class Order(models.Model):
+    PAYMENT_STATUS_CHOICES = [
+            ('paid', 'Оплачен'),
+            ('unpaid', 'Не оплачен'),
+        ]
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -27,6 +31,13 @@ class Order(models.Model):
     )
     comment = models.TextField(
         verbose_name='Комментарий'
+    )
+
+    payment_status = models.CharField(
+        max_length=6,
+        choices=PAYMENT_STATUS_CHOICES,
+        default='unpaid',
+        verbose_name="Статус оплаты"
     )
 
     class Meta:
