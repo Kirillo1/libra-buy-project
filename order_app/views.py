@@ -1,6 +1,10 @@
+import json
+
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.http import require_http_methods
 from django.contrib import messages
+from django.http import JsonResponse
 from django.db import transaction
 from decimal import Decimal
 
@@ -65,3 +69,29 @@ def create_order(request):
         return redirect('books:index')
 
     return redirect('cart:view_cart')
+
+
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
+
+
+@user_passes_test(is_admin)
+@require_http_methods(["PATCH"])
+def update_payment_status(request):
+    data = json.loads(request.body)
+    order_id = data.get("order_id")
+    payment_status = data.get("payment_status")
+    print(order_id)
+    print(payment_status)
+
+    try:
+        order = Order.objects.get(id=order_id)
+        order.payment_status = payment_status
+        order.save()
+        return JsonResponse({"status": "success"})
+    except Order.DoesNotExist:
+        return JsonResponse(
+            {"status": "error", "message": "Заказ не найден"}
+        )
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)})

@@ -62,8 +62,53 @@ function updateCommentStatus() {
     });
 }
 
+// Получение данных заказа из выбранного элемента
+function getSelectedOrderData(selectElement) {
+    const orderId = selectElement.getAttribute("data-order-id");
+    const paymentStatus = selectElement.value;
+    return { orderId, paymentStatus };
+  }
+  
+  // Отправка AJAX-запроса для обновления статуса оплаты
+  function sendUpdatePaymentStatusRequest(orderId, paymentStatus) {
+    return fetch(`/update_payment_status/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      body: JSON.stringify({
+        order_id: orderId,
+        payment_status: paymentStatus,
+      }),
+    }).then(response => response.json());
+  }
+  
+  
+  // Обработка ответа от сервера
+  function handleResponse(data) {
+    if (data.status === "success") {
+      alert("Статус оплаты успешно обновлен");
+    } else {
+      alert("Ошибка при обновлении статуса оплаты");
+    }
+  }
+  
+  // Добавление обработчика события изменения к каждому селекту
+  function addChangeEventToSelect() {
+    document.querySelectorAll(".form-select").forEach(select => {
+      select.addEventListener("change", function () {
+        const { orderId, paymentStatus } = getSelectedOrderData(this);
+        sendUpdatePaymentStatusRequest(orderId, paymentStatus)
+          .then(handleResponse)
+          .catch(error => console.error("Ошибка:", error));
+      });
+    });
+  }
+  
 
 export {
     updateBookStatus,
-    updateCommentStatus
+    updateCommentStatus,
+    addChangeEventToSelect,
 }

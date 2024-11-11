@@ -5,6 +5,7 @@ from django.db import transaction
 
 from books_app.models import Book
 from comments_app.models import Comment
+from order_app.models import OrderItem, Order
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 
 
@@ -23,11 +24,12 @@ def is_admin(user):
 def view_admin_dashboard(request):
     books = Book.objects.filter(is_verified=False)
     comments = Comment.objects.filter(is_verified=False)
-    # books = Book.objects.all()
-    # comments = Comment.objects.all()
+    orders = Order.objects.filter(payment_status='unpaid')
+
     context = {
         'books': books,
-        'comments': comments
+        'comments': comments,
+        'orders': orders
     }
 
     return render(request, 'users/admin.html', context)
