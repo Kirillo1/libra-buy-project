@@ -24,7 +24,7 @@ def view_books(request: HttpRequest) -> HttpResponse:
     return render(request, "books/index.html", context=context)
 
 
-def view_detail_book(request, book_id):
+def view_detail_book(request: HttpRequest, book_id: int) -> HttpResponse:
     book = get_object_or_404(Book, id=book_id)
     genres = book.genres.all()
     comments = book.comments.all()
