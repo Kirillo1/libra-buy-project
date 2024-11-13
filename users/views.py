@@ -13,8 +13,21 @@ from .utils import is_admin
 
 @login_required(login_url='users:login')
 def view_profile(request: HttpRequest) -> HttpResponse:
-    user_books = Book.objects.filter(seller=request.user)
-    return render(request, 'users/profile.html', {'user_books': user_books})
+    user = request.user
+
+    if user.status == 'customer':
+        customer_orders = Order.objects.filter(user=user)
+        user_books = None
+    else:
+        customer_orders = None
+        user_books = Book.objects.filter(seller=user)
+
+    context = {
+        'user_books': user_books,
+        'customer_orders': customer_orders
+    }
+
+    return render(request, 'users/profile.html', context)
 
 
 @login_required(login_url='users:login')
