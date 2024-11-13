@@ -41,6 +41,9 @@ def view_detail_book(request: HttpRequest, book_id: int) -> HttpResponse:
 
 @login_required(login_url='users:login')
 def add_book_view(request: HttpRequest) -> HttpResponse:
+    if request.user.status != 'seller':
+        return redirect('users:profile')
+
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES)
         if form.is_valid():
@@ -55,6 +58,9 @@ def add_book_view(request: HttpRequest) -> HttpResponse:
 
 @login_required(login_url='users:login')
 def edit_book_view(request: HttpRequest, book_id: int) -> HttpResponse:
+    if request.user.status != 'seller':
+        return redirect('users:profile')
+
     book = get_object_or_404(Book, id=book_id)
 
     if book.seller != request.user:
@@ -101,6 +107,9 @@ def filtered_books_view(request: HttpRequest) -> HttpResponse:
 
 @login_required(login_url='users:login')
 def delete_book_view(request: HttpRequest, book_id: int) -> HttpResponse:
+    if request.user.status != 'seller':
+        return redirect('users:profile')
+
     book = get_object_or_404(Book, id=book_id)
 
     if book.seller != request.user:
