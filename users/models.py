@@ -5,6 +5,10 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class User(AbstractUser):
+    STATUS_CHOICES = [
+            ('seller', 'Продавец'),
+            ('customer', 'Покупатель'),
+        ]
     phone_number = PhoneNumberField(
         'Номер телефона',
         unique=True,
@@ -19,6 +23,11 @@ class User(AbstractUser):
         'Ваша фотография',
         upload_to='users/',
         blank=True
+    )
+    status = models.CharField(
+        choices=STATUS_CHOICES,
+        default='customer',
+        verbose_name="Статус пользователя"
     )
 
     class Meta:
