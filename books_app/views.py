@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpRequest, HttpResponse
 
 from .models import Book, Rating
 from .forms import BookForm
@@ -11,9 +11,9 @@ from .forms import BookForm
 from comments_app.forms import CommentForm
 
 
-def view_books(request):
+def view_books(request: HttpRequest) -> HttpResponse:
     books_list = Book.objects.all()
-    paginator = Paginator(books_list, 12)  # Показывает 8 книг на странице
+    paginator = Paginator(books_list, 12)  # Показывает 12 книг на странице
 
     page_number = request.GET.get('page')
     books = paginator.get_page(page_number)
@@ -40,7 +40,7 @@ def view_detail_book(request, book_id):
 
 
 @login_required(login_url='users:login')
-def add_book_view(request):
+def add_book_view(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES)
         if form.is_valid():
@@ -54,7 +54,7 @@ def add_book_view(request):
 
 
 @login_required(login_url='users:login')
-def edit_book_view(request, book_id):
+def edit_book_view(request: HttpRequest, book_id: int) -> HttpResponse:
     book = get_object_or_404(Book, id=book_id)
 
     if book.seller != request.user:
@@ -72,7 +72,7 @@ def edit_book_view(request, book_id):
     return render(request, 'books/add_book.html', {'form': form})
 
 
-def filtered_books_view(request):
+def filtered_books_view(request: HttpRequest) -> HttpResponse:
     books = Book.objects.all()
 
     name = request.GET.get('name', '').strip()
@@ -88,7 +88,7 @@ def filtered_books_view(request):
     if author:
         books = books.filter(author__icontains=author)
 
-    paginator = Paginator(books, 12) 
+    paginator = Paginator(books, 12)
     page_number = request.GET.get('page')
     books_page = paginator.get_page(page_number)
 
@@ -100,7 +100,7 @@ def filtered_books_view(request):
 
 
 @login_required(login_url='users:login')
-def delete_book_view(request, book_id):
+def delete_book_view(request: HttpRequest, book_id: int) -> HttpResponse:
     book = get_object_or_404(Book, id=book_id)
 
     if book.seller != request.user:
@@ -114,38 +114,40 @@ def delete_book_view(request, book_id):
     return render(request, 'books/delete_book.html', {'book': book})
 
 
+@user_passes_test(lambda u: u.is_superuser)
 @require_POST
-@user_passes_test(lambda u: u.is_superuser)  # Проверка: только для суперпользователей
-def change_book_status(request, book_id):
+def change_book_status(request: HttpRequest, book_id: int) -> JsonResponse:
     try:
         book = Book.objects.get(id=book_id)
         # Меняем статус на противоположный
         book.is_verified = not book.is_verified
         book.save()
-        return JsonResponse({"status": "success", "is_verified": book.is_verified})
+        return JsonResponse(
+            {"status": "success", "is_verified": book.is_verified})
     except Book.DoesNotExist:
         return JsonResponse({"status": "error", "message": "Книга не найдена"})
 
 
 @login_required(login_url='users:login')
-def rate_book(request, book_id):
-    if request.method == "POST":
-        book = get_object_or_404(Book, id=book_id)
-        score = int(request.POST.get("score"))
+@require_POST
+def rate_book(request: HttpRequest, book_id: int) -> JsonResponse:
+    book = get_object_or_404(Book, id=book_id)
+    score = int(request.POST.get("score"))
 
-        # Убедимся, что оценка в пределах 1-5
-        if score < 1 or score > 5:
-            return JsonResponse({"status": "error", "message": "Что то пошло не так"})
+    # Убедимся, что оценка в пределах 1-5
+    if score < 1 or score > 5:
+        return JsonResponse(
+            {"status": "error", "message": "Что то пошло не так"})
 
-        # Обновляем или создаем оценку
-        rating, created = Rating.objects.update_or_create(
-            user=request.user,
-            book=book,
-            defaults={"score": score}
-        )
+    # Обновляем или создаем оценку
+    rating, created = Rating.objects.update_or_create(
+        user=request.user,
+        book=book,
+        defaults={"score": score}
+    )
 
-        # Пересчитываем средний рейтинг
-        average_rating = book.average_rating
+    # Пересчитываем средний рейтинг
+    average_rating = book.average_rating
 
-        return JsonResponse({"status": "success", "average_rating": average_rating})
-    return JsonResponse({"status": "error", "message": "Только POST запросы разрешены."})
+    return JsonResponse(
+        {"status": "success", "average_rating": average_rating})
