@@ -19,6 +19,7 @@ from django.urls import path, include
 
 from django.conf import settings
 from django.conf.urls.static import static
+from debug_toolbar.toolbar import debug_toolbar_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,8 +28,11 @@ urlpatterns = [
     path('', include('users.urls', namespace='users')),
     path('', include('cart_app.urls', namespace='cart')),
     path('', include('order_app.urls', namespace='order')),
-]
+    path('api/', include('books_api.urls', namespace='books_api'))
+]+ debug_toolbar_urls()
 
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(
+        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
+    )
